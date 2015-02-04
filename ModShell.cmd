@@ -22,11 +22,18 @@ CALL :echoTask 0 "Scanning for Forge projects... \n"
 FOR /D %%D IN (*.*) DO (
     IF EXIST %%D\build.gradle (
         BG PRINT A "    [i] " F "%%D " 7 "found \n"
+        SET _modDir=%%D
+        SET _modDirNoSpace=!_modDir: =!
+        IF NOT !_modDir!==!_modDirNoSpace! (
+            BG PRINT E "        [^!] " 7 "Mod project has a space in it's directory. This will *VERY* likely cause problems^! \n"
+        )
+        SET _modDir=
+        SET _modDirNoSpace=
     )
 )
 echo.
 echo.
-BG PRINT A "[i] " F "ModShell ready^! Type 'help' for global command list.\n"
+BG PRINT A "[i] " F "ModShell ready^! Type 'cmds' to see global commands.\n"
 ::PROMPT $CCurrent$SProject:$S!current_project!$F$_$C$P$F$_$G$S
 ::pause
 ::CMD /E:ON /F:ON /V:ON /K
@@ -51,6 +58,8 @@ IF NOT !_currentDir!==!_currentDirNoSpace! (
     pause>nul
     exit
 )
+SET _currentDir=
+SET _currentDirNoSpace=
 
 ::::::::::::::::::::::
 :: Create empty config file if required

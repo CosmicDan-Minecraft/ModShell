@@ -36,6 +36,23 @@ GOTO :EOF
 :INIT
 CALL :echoTask 0 "Checking environment sanity...\n"
 ::::::::::::::::::::::
+:: Ensure there is no whitespace in folder path
+::::::::::::::::::::::
+SET _currentDir=%~dp0
+SET _currentDirNoSpace=!_currentDir: =!
+IF NOT !_currentDir!==!_currentDirNoSpace! (
+    CALL :echoError 1 "Spaces detected in ModShell path. ModShell is currently located at:"
+    BG PRINT F "        !_currentDir:\=\\! \n"
+    CALL :echoBlank 1 "This path contains a space in one of it's parent directories. For safety reasons, ModShell"
+    CALL :echoBlank 1 "will *not* load. Please move ModShell to a safe location without spaces in the path."
+    BG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
+    echo.
+    CALL :echoBlank 1 "Press any key to quit."
+    pause>nul
+    exit
+)
+
+::::::::::::::::::::::
 :: Create empty config file if required
 ::::::::::::::::::::::
 IF NOT EXIST "%~dp0\ModShell.ini" (
@@ -85,7 +102,6 @@ IF NOT DEFINED JAVA_17_PATH (
         exit
     )
 )
-GOTO :EOF
 ::::::::::::::::::::::
 :: Check for Git installation
 ::::::::::::::::::::::

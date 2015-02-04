@@ -1,0 +1,117 @@
+Wfolder - Batch Tool Ver. 1.61 (c) 2003-2009, Horst Schaeffer
+-------------------------------------------------------------
+
+Wfolder opens a window with a directory tree, and makes the user's 
+selection available in the batch process. 
+
+The program can be used to set an environmental variable or to change
+the current directory. 
+
+Wfolder appends the name of the selected directory (with full path) to 
+a user defined command string (like SET or CD), and sends this string 
+to STDOUT. 
+The output must be redirected to a temporary batch file, which is CALLed
+to execute the command. Alternatively, you can use a FOR /F construct as
+described in "GetOutput.txt".
+
+By default the directory path will be returned in quote marks. 
+Use option /noquote, if you want the result without quote marks 
+(to append a file name, for example).
+
+The /backslash option makes sure that the path is supplied with a
+trailing backslash, so you can append a file name, no matter if the path
+is G:\ or C:\somewhere.
+
+To test the output at the command prompt just omit the redirection. 
+
++++ General syntax (in square brackets: optional): 
+
+    Wfolder "Command" "initialDir" ["WindowTitle"] [/noquote][/backslash]
+
+    Command: see below
+    initialDir: full or relative path, enclosed in quote marks if necessary.
+    For the current directory use a dot or ""; root of all drives: "\\".
+
+
++++ Example to set a variable:
+
+    Wfolder "SET Folder=" "C:" "Select Folder" > temp.bat 
+    call temp.bat
+
+    This may produce a command like this in temp.bat:
+    (Folder is a variable name of your choice)
+
+    SET Folder="C:\selected\dir"
+
+
++++ Example to change directory [and drive]:
+
+    Wfolder CD "%USERPROFILE%" "Select your folder" > temp.bat 
+    call temp.bat
+
+    This may produce a command like this in temp.bat:
+
+    CD "C:\Documents and Settings\Owner\Desktop"
+
+    If the selected drive is not the current drive, an extra line will
+    be generated to change the drive.
+
+
+Notes:
+
+    Command arguments must be separated by space (no commas). 
+    
+    If you specify any command other than CD or SET, this command will 
+    be used in the output. In case the command ends with an equal sign,
+    the space between command and selected directory will be omitted.
+    Try out some commands without redirection to see the results.
+    
+    Remember to delete temporary batch files after use. A temporary file
+    in the %temp% directory is recommended.
+    
+    The file fcd.bat is included to change directory at the command prompt.
+
+
+Exit Code:
+
+    Errorlevel 0: ok (selection by user)
+               1: cancelled
+             255: syntax error
+
+Wfolder2.exe
+
+    This program does the same as Wfolder.exe, however it uses the 
+    standard Windows box
+    
+    Advantages: regional "ok/cancel"; "New Folder" option (W2K, XP) 
+                Special Windows Desktop "folders"
+    Disadvantages: Wfolder2 maybe a little slow on old machines 
+    
+    Note: The Wfolder2 window is centered on screen, whereas Wfolder is
+    centered in the console window
+
+History:
+    ver. 1.61 2011/03/25  bugfix: command string no longer changed to lower case
+    ver. 1.6  2009/06/01  update (compiler version 4.31); GetOutput.txt
+    ver. 1.5, 2008/02/01  Wfolder window centered in console window;
+                          abort on syntax error
+    ver. 1.4, 2006/04/30  directory, title not "optional"; /noquote bug fixed 
+    ver. 1.2, 2004/08/04  option /backslash, English buttons
+    ver. 1.1, 2004/07/12  fixed: device order (new compiler version)
+
+Disclaimer:
+
+This program is freeware (c) Horst Schaeffer. No warranty, no liability 
+of any kind.
+
+Contact:  horst.schaeffer@gmx.net
+Homepage: http://www.horstmuc.de/
+Source:   http://www.horstmuc.de/source/wfolder161.zip 
+
+25 Mar 2011
+
+
+
+
+
+  

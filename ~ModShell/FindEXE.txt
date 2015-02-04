@@ -1,0 +1,47 @@
+
+FindEXE V0.1 - finds the full path to an executable file
+Freeware by Uwe Sieber - www.uwe-sieber.de
+
+
+Works under Window 2000, XP and higher, including x64 editions.
+
+
+
+Usage:
+FindEXE executable
+
+
+Sample:
+
+FindEXE calc
+
+Output:
+C:\Windows\System32\calc.exe
+
+
+Returns Errorlevels:
+
+0 - found an executable
+1 - found no executable
+2 - parameters are invalid
+
+
+Homepage:
+http://www.uwe-sieber.de/misctools_e.html
+
+
+
+Licence
+
+
+FindEXE is Freeware.
+
+Allowed:
+- usage in any environment, including commercial
+- include in software products, including commercial
+- include on CD/DVD of computer magazines
+
+Not allowed:
+- changing any of the files
+
+

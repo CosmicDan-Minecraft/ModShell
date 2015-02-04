@@ -69,6 +69,20 @@ IF NOT EXIST "%~dp0\ModShell.ini" (
 )
 SET SETTINGS="%~dp0\ModShell.ini"
 ::::::::::::::::::::::
+:: Check for write permission in current folder
+::::::::::::::::::::::
+IF NOT EXIST "%~dp0\ModShell.ini" (
+    CALL :echoError 1 "Access denied while trying to create ModShell settings. The current folder..."
+    BG PRINT F "        !_currentDir:\=\\! \n"
+    CALL :echoBlank 1 "...is either set as read-only, or you are running in a UAC-protected folder (e.g. Desktop)."
+    CALL :echoBlank 1 "For safety reasons, ModShell will *not* load. Please move ModShell to a new, full-rights location."
+    BG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
+    echo.
+    CALL :echoBlank 1 "Press any key to quit."
+    pause>nul
+    exit
+)
+::::::::::::::::::::::
 :: Check for 64-bit
 ::::::::::::::::::::::
 IF DEFINED ProgramFiles(x86) (

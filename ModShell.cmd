@@ -43,6 +43,43 @@ GOTO :EOF
 :INIT
 CALL :echoTask 0 "Checking environment sanity...\n"
 ::::::::::::::::::::::
+:: Check Windows version
+::::::::::::::::::::::
+VER | FINDSTR /i " 6\.0\." > nul
+IF %ERRORLEVEL% EQU 0 (
+    CALL :echoWarn 1 "Windows Vista detected. ModShell is untested on this OS, but should work fine."
+    CALL :echoBlank 1 "Regardless, if you encounter any errors please report them :)"
+    GOTO :VERSION_OK
+)
+VER | FINDSTR /i " 6\.1\." > nul
+IF %ERRORLEVEL% EQU 0 (
+    CALL :echoInfo 1 "Windows 7 detected"
+    GOTO :VERSION_OK
+)
+VER | FINDSTR /i " 6\.2\." > nul
+IF %ERRORLEVEL% EQU 0 (
+    CALL :echoWarn 1 "Windows 8 detected. ModShell is untested on this OS, but should work fine."
+    CALL :echoBlank 1 "Regardless, if you encounter any errors please report them :)"
+    GOTO :VERSION_OK
+)
+VER | FINDSTR /i " 5\.2\." > nul
+IF %ERRORLEVEL% EQU 0 (
+    CALL :echoError 1 "Windows XP or older detected. ModShell is unsupported on anything before Vista,"
+    CALL :echoBlank 1 "and simply cannot be adapted for obsolete versions of Windows. Sorry :("
+    echo.
+    CALL :echoBlank 1 "Press any key to quit."
+    pause>nul
+    exit
+)
+:: Something ancient or Windows 10 alpha or something crazy like ReactOS
+CALL :echoError 1 "Unknown Windows version detected. Please report this error."
+echo.
+CALL :echoBlank 1 "Press any key to quit."
+pause>nul
+exit
+
+:VERSION_OK
+::::::::::::::::::::::
 :: Ensure there is no whitespace in folder path
 ::::::::::::::::::::::
 SET _currentDir=%~dp0

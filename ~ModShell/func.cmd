@@ -31,18 +31,25 @@ IF DEFINED showGui (
 )
 SET folderBrowseResult=!folderBrowseResult:"=!
 CALL :STRIP_PATH !folderBrowseResult!
+SET folderBrowseResult=!STRIP_PATH_RESULT!
+SET STRIP_PATH_RESULT=
 GOTO :EOF
 
+:trimToFinalElement
+:: Removes the leading path, getting only the final directory/file name
+FOR %%F IN ("%~2") DO SET trimToFinalElementResult=%%~nxF
+GOTO :EOF
 
 
 :::::::::::::::::::
 :: USED INTERNALLY
 :::::::::::::::::::
 :STRIP_PATH
+:: Strips trailing slashes from a directory path, and also a filename is found
 IF NOT EXIST "%~1\*" (
-    :: assume that a full file path was given, rather than just a directory path
-    SET folderBrowseResult=%~dp1
+    :: Not a directory; strip filename from path
+    SET STRIP_PATH_RESULT=%~dp1
 )
 :: Strip trailing slash if found
-IF %folderBrowseResult:~-1%==\ SET folderBrowseResult=%folderBrowseResult:~0,-1%
+IF %STRIP_PATH_RESULT:~-1%==\ SET STRIP_PATH_RESULT=%STRIP_PATH_RESULT:~0,-1%
 GOTO :EOF

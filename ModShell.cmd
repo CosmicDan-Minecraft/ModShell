@@ -7,6 +7,8 @@ START "" /MAX CMD /E:ON /V:ON /K "%~0" START
 EXIT 
 
 :START
+CD /D "%~dp0"
+SET MODSHELL_HOME=%CD%
 SET PATH=%PATH%;%CD%\~ModShell
 :: TODO: Enforce that mod names do NOT have a ! character
 COLOR 07

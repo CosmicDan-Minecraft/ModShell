@@ -178,13 +178,13 @@ IF DEFINED GIT_PATH (
 :: Check for Eclipse installation
 ::::::::::::::::::::::
 CALL :echoTask 1 "Checking for Eclipse installation...\n"
-FOR /F "delims=" %%A IN ('Inifile !SETTINGS! [eclipse] eclipse_path') DO %%A
+CALL func settings get eclipse eclipse_path
 IF "!eclipse_path!"=="" (
     CALL :echoWarn 2 "Eclipse path not yet defined. You can either:"
     CALL :echoBlank 2 "a) Drag eclipse.exe or the Eclipse directory onto this window;"
     CALL :echoBlank 2 "b) Press enter without entering anything to open a browser GUI; or"
     CALL :echoBlank 2 "c) Manually type the path to your Eclipse folder/exe (TAB auto-completion enabled)"
-    CALL folderBrowse.cmd "Eclipse IDE directory?"
+    CALL func folderBrowse "Eclipse IDE directory?"
     SET eclipse_path=!folderBrowseResult!
     SET folderBrowseResult=
 )
@@ -195,7 +195,7 @@ IF NOT EXIST "!eclipse_path!\eclipse.exe" (
     exit
 ) ELSE (
     CALL :echoInfo 2 "Eclipse installation found at '!eclipse_path:\=\\!'"
-    Inifile !SETTINGS! [eclipse] eclipse_path=!eclipse_path!
+    CALL func settings set eclipse eclipse_path
 )
 echo.
 echo.

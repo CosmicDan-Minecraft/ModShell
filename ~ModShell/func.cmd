@@ -1,6 +1,19 @@
 @ECHO OFF
-ECHO.
-SET /P folderBrowseResult=%~1^> 
+SET _func=%1
+CALL :!_func! %*
+SET _func=
+GOTO :EOF
+
+:settings
+IF "%~2" == "set" (
+    Inifile !SETTINGS! [%3] %4=!%4!
+) ELSE (
+    FOR /F "delims=" %%A IN ('Inifile !SETTINGS! [%3] %4') DO %%A
+)
+GOTO :EOF
+
+:folderBrowse
+SET /P folderBrowseResult=%~2^> 
 IF NOT EXIST !folderBrowseResult! (
     SET showGui=true
 )
@@ -9,13 +22,17 @@ IF "!folderBrowseResult!"=="" (
 )
 IF DEFINED showGui (
     SET showGui=
-    FOR /F "delims=" %%A IN ('wfolder2 "set folderBrowseResult=" "C:\" "%~1 "') DO %%A
+    FOR /F "delims=" %%A IN ('wfolder2 "set folderBrowseResult=" "C:\" "%~2 "') DO %%A
 )
 SET folderBrowseResult=!folderBrowseResult:"=!
 CALL :STRIP_PATH !folderBrowseResult!
-ECHO.
 GOTO :EOF
 
+
+
+:::::::::::::::::::
+:: USED INTERNALLY
+:::::::::::::::::::
 :STRIP_PATH
 IF NOT EXIST "%~1\*" (
     :: assume that a full file path was given, rather than just a directory path

@@ -180,9 +180,13 @@ IF DEFINED GIT_PATH (
 CALL :echoTask 1 "Checking for Eclipse installation...\n"
 FOR /F "delims=" %%A IN ('Inifile !SETTINGS! [eclipse] eclipse_path') DO %%A
 IF "!eclipse_path!"=="" (
-    CALL :echoWarn 2 "Not set. Showing folder browser to set Eclipse directory..."
-    FOR /F "delims=" %%A IN ('wfolder2 "set eclipse_path=" "C:\" "Please browse to your Eclipse IDE directory"') DO %%A
-    SET eclipse_path=!eclipse_path:"=!
+    CALL :echoWarn 2 "Eclipse path not yet defined. You can either:"
+    CALL :echoBlank 2 "a) Drag eclipse.exe or the Eclipse directory onto this window;"
+    CALL :echoBlank 2 "b) Press enter without entering anything to open a browser GUI; or"
+    CALL :echoBlank 2 "c) Manually type the path to your Eclipse folder/exe (TAB auto-completion enabled)"
+    CALL folderBrowse.cmd "Eclipse IDE directory?"
+    SET eclipse_path=!folderBrowseResult!
+    SET folderBrowseResult=
 )
 IF NOT EXIST "!eclipse_path!\eclipse.exe" (
     CALL :echoError 2 "Eclipse installation not found. Please install Eclipse and restart ModShell."

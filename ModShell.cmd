@@ -14,18 +14,18 @@ TITLE ModShell
 ::MODE 100,40
 MODE CON:cols=100 lines=1000
 CALL :INIT
-BG PRINT F "-------------------------------\n"
-BG PRINT F "--    ModShell v0.1 Alpha    --\n"
-BG PRINT F "-------------------------------\n"
+ꞈBG PRINT F "-------------------------------\n"
+ꞈBG PRINT F "--    ModShell v0.1 Alpha    --\n"
+ꞈBG PRINT F "-------------------------------\n"
 echo.
 CALL :echoTask 0 "Scanning for Forge projects... \n"
 FOR /D %%D IN (*.*) DO (
     IF EXIST %%D\build.gradle (
-        BG PRINT A "    [i] " F "%%D " 7 "found \n"
+        ꞈBG PRINT A "    [i] " F "%%D " 7 "found \n"
         SET _modDir=%%D
         SET _modDirNoSpace=!_modDir: =!
         IF NOT !_modDir!==!_modDirNoSpace! (
-            BG PRINT E "        [^!] " 7 "Mod project has a space in it's directory. This will *VERY* likely cause problems^! \n"
+            ꞈBG PRINT E "        [^!] " 7 "Mod project has a space in it's directory. This will *VERY* likely cause problems^! \n"
         )
         SET _modDir=
         SET _modDirNoSpace=
@@ -33,7 +33,7 @@ FOR /D %%D IN (*.*) DO (
 )
 echo.
 echo.
-BG PRINT A "[i] " F "ModShell ready^! Type 'cmds' to see global commands.\n"
+ꞈBG PRINT A "[i] " F "ModShell ready^! Type 'cmds' to see global commands.\n"
 ::PROMPT $CCurrent$SProject:$S!current_project!$F$_$C$P$F$_$G$S
 ::pause
 ::CMD /E:ON /F:ON /V:ON /K
@@ -41,7 +41,15 @@ BG PRINT A "[i] " F "ModShell ready^! Type 'cmds' to see global commands.\n"
 GOTO :EOF
 
 :INIT
+CHCP 65001 >nul
+IF NOT EXIST "%~dp0\~ModShell\ꞈbg.exe" (
+    echo [X] Your Windows version does not have Unicode support for some reason.
+    echo     ModShell cannot continue. Press any key to quit.
+    pause>nul
+    exit
+)
 CALL :echoTask 0 "Checking environment sanity...\n"
+
 ::::::::::::::::::::::
 :: Check Windows version
 ::::::::::::::::::::::
@@ -86,10 +94,10 @@ SET _currentDir=%~dp0
 SET _currentDirNoSpace=!_currentDir: =!
 IF NOT !_currentDir!==!_currentDirNoSpace! (
     CALL :echoError 1 "Spaces detected in ModShell path. ModShell is currently located at:"
-    BG PRINT F "        !_currentDir:\=\\! \n"
+    ꞈBG PRINT F "        !_currentDir:\=\\! \n"
     CALL :echoBlank 1 "This path contains a space in one of it's parent directories. For safety reasons, ModShell"
     CALL :echoBlank 1 "will *not* load. Please move ModShell to a safe location without spaces in the path."
-    BG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
+    ꞈBG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
     echo.
     CALL :echoBlank 1 "Press any key to quit."
     pause>nul
@@ -102,7 +110,7 @@ SET _currentDirNoSpace=
 :: Create empty config file if required
 ::::::::::::::::::::::
 IF NOT EXIST "%~dp0\ModShell.ini" (
-    BG PRINT "" > "%~dp0\ModShell.ini"
+    ꞈBG PRINT "" > "%~dp0\ModShell.ini"
 )
 SET SETTINGS="%~dp0\ModShell.ini"
 ::::::::::::::::::::::
@@ -110,10 +118,10 @@ SET SETTINGS="%~dp0\ModShell.ini"
 ::::::::::::::::::::::
 IF NOT EXIST "%~dp0\ModShell.ini" (
     CALL :echoError 1 "Access denied while trying to create ModShell settings. The current folder..."
-    BG PRINT F "        !_currentDir:\=\\! \n"
+    ꞈBG PRINT F "        !_currentDir:\=\\! \n"
     CALL :echoBlank 1 "...is either set as read-only, or you are running in a UAC-protected folder (e.g. Desktop)."
     CALL :echoBlank 1 "For safety reasons, ModShell will *not* load. Please move ModShell to a new, full-rights location."
-    BG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
+    ꞈBG PRINT 7 "        For example - " F "C:\\MinecraftModding\\ \n"
     echo.
     CALL :echoBlank 1 "Press any key to quit."
     pause>nul
@@ -166,7 +174,7 @@ IF NOT DEFINED JAVA_17_PATH (
 :: Check for Git installation
 ::::::::::::::::::::::
 CALL :echoTask 1 "Searching for Git installation...\n"
-FOR /F "delims=" %%A IN ('findexe git') DO (
+FOR /F "delims=" %%A IN ('ꞈfindexe git') DO (
     SET GIT_PATH=%%A
 )
 IF DEFINED GIT_PATH (
@@ -203,39 +211,39 @@ GOTO :EOF
 
 :echoTask
 SET /A _num=%1-1
-FOR /L %%C IN (0,1,!_num!) DO BG PRINT "    "
-BG PRINT B "[#] " 7 "%~2"
+FOR /L %%C IN (0,1,!_num!) DO ꞈBG PRINT "    "
+ꞈBG PRINT B "[#] " 7 "%~2"
 SET _num=
 GOTO :EOF
 
 :echoTaskOk
-BG PRINT F " %~1 \n"
+ꞈBG PRINT F " %~1 \n"
 GOTO :EOF
 
 :echoInfo
 SET /A _num=%1-1
-FOR /L %%C IN (0,1,!_num!) DO BG PRINT "    "
-BG PRINT A "[i] " 7 "%~2 \n"
+FOR /L %%C IN (0,1,!_num!) DO ꞈBG PRINT "    "
+ꞈBG PRINT A "[i] " 7 "%~2 \n"
 SET _num=
 GOTO :EOF
 
 :echoWarn
 SET /A _num=%1-1
-FOR /L %%C IN (0,1,!_num!) DO BG PRINT "    "
-BG PRINT E "[^!] " 7 "%~2 \n"
+FOR /L %%C IN (0,1,!_num!) DO ꞈBG PRINT "    "
+ꞈBG PRINT E "[^!] " 7 "%~2 \n"
 SET _num=
 GOTO :EOF
 
 :echoError
 SET /A _num=%1-1
-FOR /L %%C IN (0,1,!_num!) DO BG PRINT "    "
-BG PRINT C "[X] " 7 "%~2 \n"
+FOR /L %%C IN (0,1,!_num!) DO ꞈBG PRINT "    "
+ꞈBG PRINT C "[X] " 7 "%~2 \n"
 SET _num=
 GOTO :EOF
 
 :echoBlank
 SET /A _num=%1-1
-FOR /L %%C IN (0,1,!_num!) DO BG PRINT "    "
-BG PRINT 7 "    %~2\n"
+FOR /L %%C IN (0,1,!_num!) DO ꞈBG PRINT "    "
+ꞈBG PRINT 7 "    %~2\n"
 SET _num=
 GOTO :EOF

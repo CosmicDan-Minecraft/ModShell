@@ -1,4 +1,9 @@
 @ECHO OFF
+IF "%~1"=="" (
+    echo.
+    ꞈBG PRINT C "[X] " 7 "func is only useful for internal ModShell functions. \n"
+    GOTO :EOF
+)
 SET _func=%1
 CALL :!_func! %*
 SET _func=
@@ -6,9 +11,9 @@ GOTO :EOF
 
 :settings
 IF "%~2" == "set" (
-    Inifile !SETTINGS! [%3] %4=!%4!
+    ꞈInifile !SETTINGS! [%3] %4=!%4!
 ) ELSE (
-    FOR /F "delims=" %%A IN ('Inifile !SETTINGS! [%3] %4') DO %%A
+    FOR /F "delims=" %%A IN ('ꞈInifile !SETTINGS! [%3] %4') DO %%A
 )
 GOTO :EOF
 
@@ -22,7 +27,7 @@ IF "!folderBrowseResult!"=="" (
 )
 IF DEFINED showGui (
     SET showGui=
-    FOR /F "delims=" %%A IN ('wfolder2 "set folderBrowseResult=" "C:\" "%~2 "') DO %%A
+    FOR /F "delims=" %%A IN ('ꞈwfolder2 "set folderBrowseResult=" "C:\" "%~2 "') DO %%A
 )
 SET folderBrowseResult=!folderBrowseResult:"=!
 CALL :STRIP_PATH !folderBrowseResult!

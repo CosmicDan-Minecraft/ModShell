@@ -69,9 +69,28 @@ IF "%~3" == "" (
 FOR %%F IN ("%~2") DO SET trimToFinalElementResult=%%~nxF
 GOTO :EOF
 
-:process_eclipse_workspace
-
+:processEclipseWorkspace
+:: TODO
 GOTO :EOF
+
+:modInitCheck
+:: Check for spaces in directory path
+SET _modDir=%2
+SET _modDirNoSpace=!_modDir: =!
+IF NOT !_modDir!==!_modDirNoSpace! (
+    ꞈBG PRINT E "    [^!] " 7 "Mod project has a space in it's directory. This will *VERY* likely cause problems^! \n"
+)
+SET _modDir=
+SET _modDirNoSpace=
+:: Check if mod has been initialized
+CALL func settings get %2 initialized
+IF NOT "!initialized!"=="true" (
+    ꞈBG PRINT E "    [^!] " 7 "Mod is not yet initialized. \n"
+    IF NOT "%~3"=="bare" (
+        ꞈBG PRINT 7 "        Please run the " F "refresh " 7 "command to set up this mod now^! \n"
+    )
+)
+:GOTO EOF
 
 :::::::::::::::::::
 :: USED INTERNALLY

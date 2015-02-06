@@ -20,17 +20,12 @@ CALL :INIT
 ꞈBG PRINT F "--    ModShell v0.1 Alpha    --\n"
 ꞈBG PRINT F "-------------------------------\n"
 echo.
+echo.
 CALL :echoTask 0 "Scanning for Forge projects... \n"
 FOR /D %%D IN (*.*) DO (
     IF EXIST %%D\build.gradle (
-        ꞈBG PRINT A "    [i] " F "%%D " 7 "found \n"
-        SET _modDir=%%D
-        SET _modDirNoSpace=!_modDir: =!
-        IF NOT !_modDir!==!_modDirNoSpace! (
-            ꞈBG PRINT E "        [^!] " 7 "Mod project has a space in it's directory. This will *VERY* likely cause problems^! \n"
-        )
-        SET _modDir=
-        SET _modDirNoSpace=
+        ꞈBG PRINT A "  [i] " F "%%D " 7 "found \n"
+        CALL func modInitCheck %%D bare
     )
 )
 echo.
@@ -235,7 +230,8 @@ IF NOT EXIST "!eclipse_workspace!" (
     MKDIR "!eclipse_workspace!"
 )
 CALL :echoInfo 2 "Eclipse workspace found at '!eclipse_workspace:\=\\!'"
-CALL func process_eclipse_workspace
+CALL func processEclipseWorkspace
+CALL :echoInfo 0 "Everything seems to be in order."
 echo.
 echo.
 GOTO :EOF

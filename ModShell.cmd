@@ -9,7 +9,7 @@ EXIT
 
 :START
 SET MODSHELL_HOME=%CD%
-SET PATH=%PATH%;%CD%\~ModShell
+SET PATH=%PATH%;%CD%\.ModShell
 :: TODO: Enforce that mod names do NOT have a ! character
 COLOR 07
 TITLE ModShell
@@ -44,7 +44,7 @@ GOTO :EOF
 
 :INIT
 CHCP 65001 >nul
-IF NOT EXIST "%~dp0\~ModShell\ꞈbg.exe" (
+IF NOT EXIST "%~dp0\.ModShell\ꞈbg.exe" (
     echo [X] Your Windows version does not have Unicode support for some reason.
     echo     ModShell cannot continue. Press any key to quit.
     pause>nul
@@ -215,8 +215,8 @@ IF "!eclipse_workspace!"=="" (
     CALL :echoBlank 2 "specify the location of an existing ModShell-created Eclipse workspace."
     CALL :echoBlank 2 " - Note that this is *not* the location for your Mods - it is only where "
     CALL :echoBlank 2 "   ModShell/Eclipse will store their configuration."
-    CALL :echoBlank 2 " - Press enter alone to accept the default of '.\\~eclipse'"
-    CALL func folderBrowse "New/existing Eclipse workspace directory for ModShell?" ".\~eclipse"
+    CALL :echoBlank 2 " - Press enter alone to accept the default of '.\\.eclipse'"
+    CALL func folderBrowse "New/existing Eclipse workspace directory for ModShell?" ".\.eclipse"
     IF "!folderBrowseResult!"=="" (
         CALL :echoError 2 "Eclipse workspace path invalid. Press any key to quit ModShell."
         pause>nul

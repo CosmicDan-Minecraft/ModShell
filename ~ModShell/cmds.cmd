@@ -54,6 +54,7 @@ IF NOT "%~1"=="bare" (
     ꞈBG PRINT 7 "    Where " F "[modname] " 7 "is one of the following: \n"
     FOR /D %%D IN (!MODSHELL_HOME!\*.*) DO (
         IF EXIST %%D\build.gradle (
+            SET _hasMod=true
             CALL func trimToFinalElement "%%D"
             ꞈBG PRINT F "        !trimToFinalElementResult! \n"
             SET _modDir=!trimToFinalElementResult!
@@ -66,6 +67,10 @@ IF NOT "%~1"=="bare" (
             SET trimToFinalElementResult=
         )
     )
+    IF NOT DEFINED _hasMod (
+        ꞈBG PRINT 7 "        [No mods found] \n"
+    )
+    SET _hasMod=
     ꞈBG PRINT 7 "    - See the " F "create " 7 "command to create a new mod. \n"
 ) ELSE (
     ꞈBG PRINT 7 "    Where " F "modname " 7 "is the directory name of an existing Forge mod. \n"

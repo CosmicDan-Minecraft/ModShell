@@ -1,4 +1,5 @@
 @ECHO OFF
+CD /D "%~dp0"
 IF "%1"=="START" GOTO :START
 SETLOCAL ENABLEDELAYEDEXPANSION ENABLEEXTENSIONS
 SET current_project=None
@@ -7,7 +8,6 @@ START "" /MAX CMD /E:ON /V:ON /K "%~0" START
 EXIT 
 
 :START
-CD /D "%~dp0"
 SET MODSHELL_HOME=%CD%
 SET PATH=%PATH%;%CD%\~ModShell
 :: TODO: Enforce that mod names do NOT have a ! character
@@ -199,14 +199,43 @@ IF "!eclipse_path!"=="" (
     SET folderBrowseResult=
 )
 IF NOT EXIST "!eclipse_path!\eclipse.exe" (
-    CALL :echoError 2 "Eclipse installation not found. Please install Eclipse and restart ModShell."
-    CALL :echoBlank 2 "Press any key to quit."
+    CALL :echoError 2 "Eclipse installation not found at this location."
+    CALL :echoBlank 2 "Press any key to quit ModShell."
     pause>nul
     exit
 ) ELSE (
     CALL :echoInfo 2 "Eclipse installation found at '!eclipse_path:\=\\!'"
     CALL func settings set eclipse eclipse_path
 )
+CALL :echoTask 1 "Checking for Eclipse workspace...\n"
+CALL func settings get eclipse eclipse_workspace
+IF "!eclipse_workspace!"=="" (
+    CALL :echoWarn 2 "Eclipse workspace not yet created."
+    CALL :echoInfo 2 "Please enter the location to create a new Eclipse workspace, or"
+    CALL :echoBlank 2 "specify the location of an existing ModShell-created Eclipse workspace."
+    CALL :echoBlank 2 " - Note that this is *not* the location for your Mods - it is only where "
+    CALL :echoBlank 2 "   ModShell/Eclipse will store their configuration."
+    CALL :echoBlank 2 " - Press enter alone to accept the default of '.\\~eclipse'"
+    CALL func folderBrowse "New/existing Eclipse workspace directory for ModShell?" ".\~eclipse"
+    IF "!folderBrowseResult!"=="" (
+        CALL :echoError 2 "Eclipse workspace path invalid. Press any key to quit ModShell."
+        pause>nul
+        EXIT
+    ) ELSE (
+        SET eclipse_workspace=!folderBrowseResult!
+        CALL func settings set eclipse eclipse_workspace
+    )
+)
+IF NOT EXIST "!eclipse_workspace!" (
+    CALL :echoWarn 2 "Eclipse workspace is missing"
+    CALL :echoBlank 2 "If you have moved the workspace folder, copy it back to..."
+    ꞈBG PRINT F "!eclipse_workspace! \n"
+    CALL :echoBlank 2 "...or, press any key to create a new workspace."
+    pause>nul
+    MKDIR "!eclipse_workspace!"
+)
+CALL :echoInfo 2 "Eclipse workspace found at '!eclipse_workspace:\=\\!'"
+CALL func process_eclipse_workspace
 echo.
 echo.
 GOTO :EOF

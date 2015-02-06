@@ -1,4 +1,5 @@
 @ECHO OFF
+CD /D !MODSHELL_HOME!
 IF /I "%~1"=="none" (
     :: special case for deselect
     CALL deselect

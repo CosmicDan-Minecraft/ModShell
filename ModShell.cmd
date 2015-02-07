@@ -25,7 +25,7 @@ CALL :echoTask 0 "Scanning for Forge projects... \n"
 FOR /D %%D IN (*.*) DO (
     IF EXIST %%D\build.gradle (
         ꞈBG PRINT A "  [i] " F "%%D " 7 "found \n"
-        CALL func modInitCheck %%D bare
+        CALL func modCheck %%D bare
     )
 )
 echo.
@@ -84,6 +84,22 @@ pause>nul
 exit
 
 :VERSION_OK
+::::::::::::::::::::::
+:: Test for temporary files write permissions
+::::::::::::::::::::::
+rmdir /S /Q "!TEMP!\modshell" >nul 2>&1
+MKDIR "!TEMP!\modshell" >nul 2>&1
+IF NOT EXIST "!TEMP!\modshell" (
+    CALL :echoError 1 "Unable to gain write permissions to temporary folder."
+    CALL :echoBlank 1 "ModShell is running in a UAC-protected path (e.g. Desktop) or as limited user."
+    CALL :echoBlank 1 "Please try running as Administrator or moving it to a permissive location, such"
+    CALL :echoBlank 1 "as C:\\MinecraftModding\\"
+    echo.
+    CALL :echoBlank 1 "Press any key to quit."
+    pause>nul
+    exit
+)
+
 ::::::::::::::::::::::
 :: Ensure there is no whitespace in folder path
 ::::::::::::::::::::::
@@ -189,7 +205,9 @@ IF "!eclipse_path!"=="" (
     CALL :echoBlank 2 "a) Drag eclipse.exe or the Eclipse directory onto this window;"
     CALL :echoBlank 2 "b) Press enter without entering anything to open a browser GUI; or"
     CALL :echoBlank 2 "c) Manually type the path to your Eclipse folder/exe (TAB auto-completion enabled)"
+    echo.
     CALL func folderBrowse "Eclipse IDE directory?"
+    echo.
     SET eclipse_path=!folderBrowseResult!
     SET folderBrowseResult=
 )

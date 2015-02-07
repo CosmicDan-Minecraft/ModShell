@@ -64,6 +64,23 @@ IF "%~3" == "" (
     GOTO :EOF
 )
 
+:fileBrowse
+SET /P fileBrowseResult=%~2^> 
+IF "%~3" == "" (
+    :: Prompting for an existing file - supports GUI if entry is empty
+    IF NOT EXIST !fileBrowseResult! (
+        SET showGui=true
+    )
+    IF "!fileBrowseResult!"=="" (
+        SET showGui=true
+    )
+    IF DEFINED showGui (
+        SET showGui=
+        FOR /F "delims=" %%A IN ('ꞈFileToOpen "SET fileBrowseResult=" "!MODSHELL_HOME!\*.zip" "%~2" /noquote /noCRLF') DO %%A
+    )
+)
+GOTO :EOF
+
 :trimToFinalElement
 :: Removes the leading path, getting only the final directory/file name
 FOR %%F IN ("%~2") DO SET trimToFinalElementResult=%%~nxF
@@ -73,7 +90,7 @@ GOTO :EOF
 :: TODO
 GOTO :EOF
 
-:modInitCheck
+:modCheck
 :: Check for spaces in directory path
 SET _modDir=%2
 SET _modDirNoSpace=!_modDir: =!
@@ -82,15 +99,77 @@ IF NOT !_modDir!==!_modDirNoSpace! (
 )
 SET _modDir=
 SET _modDirNoSpace=
-:: Check if mod has been initialized
-CALL func settings get %2 initialized
-IF NOT "!initialized!"=="true" (
-    ꞈBG PRINT E "    [^!] " 7 "Mod is not yet initialized. \n"
+:: Check if mod has been Forged
+CALL :checkForged noparam %2
+IF "!checkForged!"=="false" (
+    ꞈBG PRINT E "    [^!] " 7 "Mod is not yet set up with Forge. \n"
     IF NOT "%~3"=="bare" (
-        ꞈBG PRINT 7 "        Please run the " F "refresh " 7 "command to set up this mod now^! \n"
+        ꞈBG PRINT 7 "        Please run the " F "refresh " 7 "command to set up Forge for this mod^! \n"
+    )
+) ELSE (
+    :: check that Forge has actually been installed
+    CALL :checkForgedAdditional noparam %2
+    IF "!checkForgedAdditional!"=="false" (
+        ꞈBG PRINT E "    [^!] " 7 "Mod has Forge installed but needs to be set up. \n"
+        IF NOT "%~3"=="bare" (
+            ꞈBG PRINT 7 "        Please run the " F "refresh " 7 "command to set up Forge for this mod^! \n"
+        )
+    ) ELSE (
+        :: Mod is fully-forged, check for eclipse project
+        CALL :checkEclipsed noparam %2
+        IF "!checkEclipsed!"=="false" (
+            ꞈBG PRINT E "    [^!] " 7 "Mod has Forge installed but only partially set up. \n"
+            IF NOT "%~3"=="bare" (
+                ꞈBG PRINT 7 "        Please run the " F "refresh " 7 "command to finish the set up for this mod^! \n"
+            )
+        ) ELSE (
+            :: eclipse project exists, ensure it's added to the workspace
+            IF NOT EXIST "!eclipse_workspace!\.metadata\.plugins\org.eclipse.core.resources\.projects\%2\.location" (
+                ꞈBG PRINT E "    [^!] " 7 "Mod is not yet initialized. \n"
+                IF NOT "%~3"=="bare" (
+                    ꞈBG PRINT 7 "        Please run the " F "init " 7 "command now to add this Mod to the eclipse workspace. \n"
+                )
+            )
+        )
     )
 )
-:GOTO EOF
+GOTO :EOF
+
+:checkForged
+IF "%~2"=="" (
+    SET _checkPath=!MODSHELL_HOME!\!current_project!
+) ELSE (
+    SET _checkPath=%~2
+)
+SET checkForged=true
+IF NOT EXIST "!_checkPath!\gradlew.bat" SET checkForged=false
+IF NOT EXIST "!_checkPath!\gradlew" SET checkForged=false
+IF NOT EXIST "!_checkPath!\gradle\wrapper\gradle-wrapper.jar" SET checkForged=false
+IF NOT EXIST "!_checkPath!\gradle\wrapper\gradle-wrapper.properties" SET checkForged=false
+SET _checkPath=
+GOTO :EOF
+
+:checkForgedAdditional
+IF "%~2"=="" (
+    SET _checkPath=!MODSHELL_HOME!\!current_project!
+) ELSE (
+    SET _checkPath=%~2
+)
+SET checkForgedAdditional=true
+IF NOT EXIST "!_checkPath!\.gradle" SET checkForgedAdditional=false
+IF NOT EXIST "!_checkPath!\build" SET checkForgedAdditional=false
+GOTO :EOF
+
+:checkEclipsed
+IF "%~2"=="" (
+    SET _checkPath=!MODSHELL_HOME!\!current_project!
+) ELSE (
+    SET _checkPath=%~2
+)
+SET checkEclipsed=true
+IF NOT EXIST "!_checkPath!\.classpath" SET checkEclipsed=false
+IF NOT EXIST "!_checkPath!\.project" SET checkEclipsed=false
+GOTO :EOF
 
 :::::::::::::::::::
 :: USED INTERNALLY
